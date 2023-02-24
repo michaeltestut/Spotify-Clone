@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { AiFillClockCircle } from "react-icons/ai";
 import { useStateProvider } from "../utils/StateProvider";
 import axios from "axios";
 import { reducerCases } from "../utils/constants";
+import { BsPlayFill } from "react-icons/bs";
+import {FaPlay} from "react-icons/fa";
 
-export default function Body() {
+export default function Body({ headerBackground }) {
   const [{ token, selectedPlaylistId, selectedPlaylist }, dispatch] =
     useStateProvider();
+  const [rowHovered, setRowHovered] = useState(true);
+  const [rowId, setRowId] = useState(null);
   useEffect(() => {
     const getInitialPlaylist = async () => {
       try {
@@ -38,6 +42,7 @@ export default function Body() {
             track_number: track.track_number,
           })),
         };
+
         dispatch({ type: reducerCases.SET_PLAYLIST, selectedPlaylist });
       } catch (err) {
         console.log(err);
@@ -45,9 +50,14 @@ export default function Body() {
     };
     getInitialPlaylist();
   }, [token, selectedPlaylistId, dispatch]);
+  const msToMinutesAndSeconds = (ms) => {
+    let minutes = Math.floor(ms / 60000);
+    let seconds = ((ms % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  };
 
   return (
-    <Container>
+    <Container headerBackground={headerBackground}>
       {selectedPlaylist && (
         <>
           <div className="playlist">
@@ -94,8 +104,9 @@ export default function Body() {
                 ) => {
                   return (
                     <div className="row" key={id}>
-                      <div className="col">
-                        <span>{index + 1}</span>
+                      <div className="hash">
+                        <FaPlay className="playButton"/>
+                        <span className="index">{index + 1}</span>
                       </div>
                       <div className="col detail">
                         <div className="image">
@@ -110,7 +121,9 @@ export default function Body() {
                         <span className="album">{album}</span>
                       </div>
                       <div className="col">
-                        <span className="duration">{duration}</span>
+                        <span className="duration">
+                          {msToMinutesAndSeconds(duration)}
+                        </span>
                       </div>
                     </div>
                   );
@@ -157,6 +170,8 @@ const Container = styled.div`
       top: 15vh;
       padding: 1rem 3rem;
       transition: 0.3s ease-in-out;
+      background-color: ${({ headerBackground }) =>
+        headerBackground ? "#000000dc" : "none"};
     }
     .tracks {
       margin: 0 2rem;
@@ -164,28 +179,52 @@ const Container = styled.div`
       flex-direction: column;
       margin-bottom: 5rem;
       .row {
-        padding: 0.5rem 1rem;
-        display: grid;
-        grid-template-columns: 0.3fr 3.1fr 1.85fr 0.1fr;
-        &:hover{
-          background-color: rgba(0,0,0,0.7);
-        }
-        .col{
-          display:flex;
+        .hash{
+          display:grid;
           align-items: center;
-          color:#dddcdc;
-          img{
+          color: #dddcdc;
+          img {
             height: 40px;
           }
         }
-        .detail{
+        .playButton{
+          grid-column: 1;
+          grid-row: 1;
+          visibility: hidden;
+        }
+        .index{
+          grid-column: 1;
+          grid-row: 1;
+        }
+        padding: 0.5rem 1rem;
+        display: grid;
+        grid-template-columns: 0.3fr 3fr 1.97fr 0.1fr;
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.7);
+          .playButton{
+            visibility: visible;
+          }
+          .hash{
+            visibility: hidden;
+          }
+        }
+        .col {
           display: flex;
-          gap:1rem;
-          .info{
-            display:flex;
+          align-items: center;
+          color: #dddcdc;
+          img {
+            height: 40px;
+          }
+        }
+        .detail {
+          display: flex;
+          gap: 1rem;
+          .info {
+            display: flex;
             flex-direction: column;
-            .name{
-              
+            .name {
+              font-weight: bold;
+              font-size: large;
             }
           }
         }
