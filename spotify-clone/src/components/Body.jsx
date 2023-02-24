@@ -201,6 +201,7 @@ const Container = styled.div`
         grid-template-columns: 0.3fr 3fr 1.97fr 0.1fr;
         &:hover {
           background-color: rgba(0, 0, 0, 0.7);
+          cursor: pointer;
           .playButton{
             visibility: visible;
           }

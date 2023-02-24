@@ -19,7 +19,7 @@
 .env.production.local
 
 # sensitive info
-constants.js
+keys.js
 
 npm-debug.log*
 yarn-debug.log*
