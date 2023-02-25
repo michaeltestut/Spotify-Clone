@@ -5,7 +5,7 @@ import { useStateProvider } from "../utils/StateProvider";
 import axios from "axios";
 import { reducerCases } from "../utils/constants";
 import { BsPlayFill } from "react-icons/bs";
-import {FaPlay} from "react-icons/fa";
+import { FaPlay } from "react-icons/fa";
 
 export default function Body({ headerBackground }) {
   const [{ token, selectedPlaylistId, selectedPlaylist }, dispatch] =
@@ -56,6 +56,45 @@ export default function Body({ headerBackground }) {
     return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   };
 
+  const playTrack = async (
+    id,
+    name,
+    artists,
+    image,
+    context_uri,
+    track_number
+  ) => {
+    try {
+      const response = await axios.put(
+        "https://api.spotify.com/v1/me/player/play",
+        {
+          context_uri,
+          offset: {
+            position: track_number - 1,
+          },
+          position_ms: 0,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if(response.status===204){
+        const currentlyPlaying = {
+          id,name,artists,image,
+        }
+        dispatch({type:reducerCases.SET_PLAYING,currentlyPlaying})
+        dispatch({type:reducerCases.SET_PLAYER_STATE,playerState:true})
+      } else{
+        dispatch({type:reducerCases.SET_PLAYER_STATE,playerState:true})
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Container headerBackground={headerBackground}>
       {selectedPlaylist && (
@@ -103,9 +142,22 @@ export default function Body({ headerBackground }) {
                   index
                 ) => {
                   return (
-                    <div className="row" key={id}>
+                    <div
+                      className="row"
+                      key={id}
+                      onClick={() =>
+                        playTrack(
+                          id,
+                          name,
+                          artists,
+                          image,
+                          context_uri,
+                          track_number
+                        )
+                      }
+                    >
                       <div className="hash">
-                        <FaPlay className="playButton"/>
+                        <FaPlay className="playButton" />
                         <span className="index">{index + 1}</span>
                       </div>
                       <div className="col detail">
@@ -179,20 +231,20 @@ const Container = styled.div`
       flex-direction: column;
       margin-bottom: 5rem;
       .row {
-        .hash{
-          display:grid;
+        .hash {
+          display: grid;
           align-items: center;
           color: #dddcdc;
           img {
             height: 40px;
           }
         }
-        .playButton{
+        .playButton {
           grid-column: 1;
           grid-row: 1;
           visibility: hidden;
         }
-        .index{
+        .index {
           grid-column: 1;
           grid-row: 1;
         }
@@ -202,10 +254,10 @@ const Container = styled.div`
         &:hover {
           background-color: rgba(0, 0, 0, 0.7);
           cursor: pointer;
-          .playButton{
+          .playButton {
             visibility: visible;
           }
-          .hash{
+          .hash {
             visibility: hidden;
           }
         }

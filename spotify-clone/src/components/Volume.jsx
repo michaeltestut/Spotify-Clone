@@ -57,12 +57,13 @@ const Container = styled.div`
       width: 0.75rem;
       height: 0.75rem;
       background-color: white;
-      /* border-radius: 50%; */
+      border-radius: 50%;
       box-shadow: -200px 95px 0 200px white;
     }
     &:hover {
       &::-webkit-slider-thumb {
         box-shadow: -200px 95px 0 200px #49f585;
+        border:1px solid #282828;
       }
     }
   }
