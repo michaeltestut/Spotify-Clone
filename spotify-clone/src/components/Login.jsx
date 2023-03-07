@@ -5,7 +5,7 @@ import { clientID } from "../utils/constants";
 export default function Login() {
   const handleClick = () => {
     const clientId = clientID;
-    const redirectUrl = "http://3.101.73.65//";
+    const redirectUrl = "http://3.101.73.65/";
     const apiUrl = "https://accounts.spotify.com/authorize";
     const scope = [
       "user-read-email",
